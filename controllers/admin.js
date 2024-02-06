@@ -2,36 +2,37 @@
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 
-exports.addUser = async (req, res) => {
+const jwt = require('jsonwebtoken');
+
+exports.addUser = async (req, res, next) => {
     
     const {name, email, password, repeat} = req.body
 
-    User.userValidation(req.body)
-        .then(async() => {
-            const hash = await bcrypt.hash(password, 10)
+    try {
+        
+        await User.userValidation(req.body);
 
-            User.create({
-                ...req.body,
-                password : hash,
-                repeat : hash
-            })
-            .then(() => {
-                // mailSender(email, name, "شما با موفقیت داخل سایت ثبت نام کردید !", `Dear ${name} welcome to our home !`)
-                res.status(201).json({massage : "ثبت نام با موفقیت انجام شد !"})
-            
-            })
-            .catch((err) => {
-                err.code === 11000
-                ?   res.status(402).json({massage : "این ایمیل قبلاً استفاده شده است !"}, err)
-                :   res.status(401).json({massage : "ساخت کاربر با یک مشکل غیرقابل پیش بینی مواجه شده است !", err})
-            })
+        const hash = await bcrypt.hash(password, 10);
+
+        const user = await User.findOne({email})
+
+        if(user) {
+            const err = new Error("این ایمیل قبلاً ثبت شده است !")
+            err.statusCode = 400
+            throw err
+        }
+
+        await User.create({
+            ...req.body,
+            password : hash,
         })
-        .catch((err) => {
-            res.status(401).json({
-                massage : "در اعتبار سنجی اطلاعات شما مشکلی به وجود آمده است !",
-                err
-            })
-        })
+
+        // mailSender(email, name, "شما با موفقیت داخل سایت ثبت نام کردید !", `Dear ${name} welcome to our home !`)
+        res.status(201).json({massage : "ثبت نام با موفقیت انجام شد !"})
+    
+    } catch (err) {
+        next(err)
+    }
 }
 
 exports.loginCtrl = async (req, res, next) => {
@@ -50,13 +51,14 @@ exports.loginCtrl = async (req, res, next) => {
         const isPassEqual = await bcrypt.compare(password, user.password)
 
         if(isPassEqual) {
-            const token = {
-                userId : user._id,
-                email : user.email,
-                username : user.username
-            }
 
-            res.status(200).json(token)
+            const token = jwt.sign({
+                userId : user._id.toString(),
+                username : user.username
+            }, process.env.JWT_SECRET, {expiresIn : "1h"})
+
+            res.status(200).json({token, userId : user._id.toString()})
+
         } else {
             const err = new Error("رمز عبور شما صحیح نمی باشد !")
             err.statusCode = 422;

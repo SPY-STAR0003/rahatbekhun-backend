@@ -1,7 +1,10 @@
 // ? ===================== Libraries =====
 const envConfig = require('dotenv').config({path : "./config/config.env"});
 const parser = require('body-parser');
+
+// ? ===================== Files =========
 const connectDB = require('./config/db');
+const { setHeaders } = require('./middlewares/setHeaders');
 
 // ? ===================== Express =======
 const express = require('express')
@@ -17,6 +20,7 @@ connectDB();
 // * ========= Parsers ===================
 app.use(parser.urlencoded({extended : true}))
 app.use(express.json());
+app.use(setHeaders)
 
 // * ========= Routes ====================
 app.use("/admin", adminRoute)
