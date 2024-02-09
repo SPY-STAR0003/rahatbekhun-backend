@@ -8,5 +8,6 @@ router.post("/register", adminCtrls.addUser)
 
 router.post("/login", adminCtrls.loginCtrl)
 
+router.post("/auth", adminCtrls.auth)
 
 module.exports = router

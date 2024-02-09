@@ -2,11 +2,9 @@
 
 exports.errorHandler = (error, req, res, next) => {
 
-    console.log(error)
+    const status = error.status || 500
 
-    const message = error.message;
-    const status = error.statusCode || 500;
-    const data = error.data
+    const {message, data} = error
 
     res.status(status).json({message, data})
 }

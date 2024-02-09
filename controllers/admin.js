@@ -43,9 +43,10 @@ exports.loginCtrl = async (req, res, next) => {
         const user = await User.findOne({email})
         
         if(!user) {
-            const err = new Error( "کاربری با این مشخصات یافت نشد !")
-            err.statusCode = 422;
-            throw err
+            const err = new Error("عدم تطابق مشخصات")
+            err.data = {email : "کاربری با این ایمیل وجود ندارد"}
+            err.status = 422;
+            throw err;
         }
 
         const isPassEqual = await bcrypt.compare(password, user.password)
@@ -55,16 +56,43 @@ exports.loginCtrl = async (req, res, next) => {
             const token = jwt.sign({
                 userId : user._id.toString(),
                 username : user.username
-            }, process.env.JWT_SECRET, {expiresIn : "1h"})
+            }, process.env.JWT_SECRET)
 
             res.status(200).json({token, userId : user._id.toString()})
 
         } else {
-            const err = new Error("رمز عبور شما صحیح نمی باشد !")
-            err.statusCode = 422;
+            const err = new Error("رمز عبور نامعتبر")
+            err.data = {password : "رمزعبور صحیح نمی باشد !"}
+            err.status = 422;
             throw err;
         }
         
+    } catch (err) {
+        next(err)
+    }
+}
+
+exports.auth = async (req, res, next) => {
+    
+    const token = req.body?.token
+
+    try {
+        if(!token) {
+            const err = new Error('شما اجازه دسترسی به این قسمت را ندارید، لطفا وارد حساب کاربری خود شوید یا یک حساب کاربری بسازید !')
+            err.status = 401
+            throw err
+        }
+
+        const decodedToken = await jwt.verify(token, process.env.JWT_SECRET)
+
+        if(!decodedToken) {
+            const err = new Error('شما اجازه دسترسی به این قسمت را ندارید، لطفا وارد حساب کاربری خود شوید یا یک حساب کاربری بسازید !')
+            err.status = 403
+            throw err
+        }
+
+        res.status(200).json(decodedToken)
+
     } catch (err) {
         next(err)
     }
