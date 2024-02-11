@@ -74,7 +74,8 @@ exports.loginCtrl = async (req, res, next) => {
 
 exports.auth = async (req, res, next) => {
     
-    const token = req.body?.token
+    const token = req.body?.token || req?.headers?.cookie?.substr(23)
+    // ! Above I assumed that the name of the cookie is => rahatbekhun-user-token
 
     try {
         if(!token) {

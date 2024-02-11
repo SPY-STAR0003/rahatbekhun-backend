@@ -1,6 +1,7 @@
 // ? ===================== Libraries =====
 const envConfig = require('dotenv').config({path : "./config/config.env"});
 const parser = require('body-parser');
+const cors = require('cors');
 
 // ? ===================== Files =========
 const connectDB = require('./config/db');
@@ -21,6 +22,10 @@ connectDB();
 app.use(parser.urlencoded({extended : true}))
 app.use(express.json());
 app.use(setHeaders)
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials : true
+}))
 
 // * ========= Routes ====================
 app.use("/admin", adminRoute)
