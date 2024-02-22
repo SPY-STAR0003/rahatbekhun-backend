@@ -13,6 +13,7 @@ const app = express()
 
 // ? ===================== Routes ========
 const adminRoute = require('./routes/admin');
+const postRoute = require('./routes/posts');
 const { errorHandler } = require('./middlewares/error');
 
 // * ========= Connect DataBase ==========
@@ -29,6 +30,7 @@ app.use(cors({
 
 // * ========= Routes ====================
 app.use("/admin", adminRoute)
+app.use("/posts", postRoute)
 
 // * ========= Middlewares ===============
 app.use(errorHandler)
