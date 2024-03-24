@@ -30,7 +30,7 @@ app.use(cors({
 
 // * ========= Routes ====================
 app.use("/admin", adminRoute)
-app.use("/posts", postRoute)
+app.use("/admin/posts", postRoute)
 
 // * ========= Middlewares ===============
 app.use(errorHandler)

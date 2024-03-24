@@ -23,6 +23,7 @@ exports.addPost = async (req, res, next) => {
         res.status(201).json({message : "پست جدید اضافه شد !"})
     } catch (err) {
         next(err)
+        console.log(err)
     }
 
 }
