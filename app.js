@@ -2,6 +2,7 @@
 const envConfig = require('dotenv').config({path : "./config/config.env"});
 const parser = require('body-parser');
 const cors = require('cors');
+const fileUpload = require('express-fileupload');
 
 // ? ===================== Files =========
 const connectDB = require('./config/db');
@@ -14,6 +15,7 @@ const app = express()
 // ? ===================== Routes ========
 const adminRoute = require('./routes/admin');
 const postRoute = require('./routes/posts');
+const worksheetRoute = require('./routes/worksheet');
 const { errorHandler } = require('./middlewares/error');
 
 // * ========= Connect DataBase ==========
@@ -21,6 +23,7 @@ connectDB();
 
 // * ========= Parsers ===================
 app.use(parser.urlencoded({extended : true}))
+app.use(fileUpload())
 app.use(express.json());
 app.use(setHeaders)
 app.use(cors({
@@ -31,6 +34,7 @@ app.use(cors({
 // * ========= Routes ====================
 app.use("/admin", adminRoute)
 app.use("/admin/posts", postRoute)
+app.use("/admin/worksheets", worksheetRoute)
 
 // * ========= Middlewares ===============
 app.use(errorHandler)
