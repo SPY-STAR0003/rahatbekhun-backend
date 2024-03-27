@@ -54,7 +54,7 @@ const worksheetSchema = {
     },
 }
 
-const worksheetsProps = yup.object().shape({
+const worksheetYupSchema = yup.object().shape({
     name : yup.string().required('یعنی کاربرگتو یه اسم براش نمیزاری ؟'),
     grade : yup.string().required('طرف نباس بدونه مالی چه سالیه این کاربرگ ؟').oneOf(['اول','دوم','سوم','چهارم','پنجم','ششم'], 'مال چه پایه ایه ؟ پایه رو انتخاب نکردی که !!'),
     book : yup.string().required('فدات شم این از کدوم کتابه ؟ چرا نمیگی ؟').oneOf(["ریاضی","فارسی","مطالعات","قرآن و هدیه ها","هنر","علوم","تفکروپژوهش","کاروفناوری"], 'از بین کتابا یه کتاب انتخاب کن !'),
@@ -65,10 +65,9 @@ const worksheetsProps = yup.object().shape({
     status : yup.string().required("دست شوما درد نکنه !").oneOf(['منتشرشده','در دست بررسی'], ""),
     details : yup.string().required("دو کلوم نوشتن برا این لامصب اینقد سخته که نمی نویسی ؟؟"),
     hashtags : yup.array().required('اصن هشتگ نزاری بعداً چجور ملت اینا پیدا کنند ؟').of(yup.string()),
-    files : yup.array().required('لطفا تصویر کاربرگ را ارسال کنید !')
 })
 
 module.exports = {
     worksheetSchema,
-    worksheetsProps
+    worksheetYupSchema
 }
