@@ -15,7 +15,9 @@ exports.addWorksheet = async (req, res) => {
         {
             newObj[key] = body[key];
             return newObj;
-        }, {hashtags : body['hashtags[]']})
+        }, { hashtags : body['hashtags[]'] })
+
+    if(typeof newBody.hashtags === 'string') newBody.hashtags = [newBody.hashtags]
 
     // TODO : Get Images ====================================
     const uploadedImages = Object.values(files)[0].length
@@ -25,7 +27,7 @@ exports.addWorksheet = async (req, res) => {
     try {
 
         // TODO : Validation ================================
-        await worksheet.worksheetValidation({...newBody})
+        await worksheet.worksheetValidation({...newBody, pictures : uploadedImages})
 
         // TODO : Make Images Ready ! =======================
         const picturesFolder = []
@@ -33,6 +35,7 @@ exports.addWorksheet = async (req, res) => {
         uploadedImages.forEach(async (picture, index) => {          
             const name = `${shortId.generate()}_${picture.name}`
             const path = `${root}/public/uploads/worksheets/${name}`
+            
             picturesFolder.push({file : index, name})
 
             await sharp(picture.data)
@@ -42,10 +45,11 @@ exports.addWorksheet = async (req, res) => {
                 console.log(err)
             })
         });
+
         // TODO : Creation ==================================
         worksheet.create({
             ...newBody,
-            picturesFolder
+            ...picturesFolder
         })
 
         res.status(200).json({
