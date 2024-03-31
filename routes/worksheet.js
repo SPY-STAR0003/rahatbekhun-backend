@@ -1,10 +1,11 @@
 
 const { Router } = require('express');
-const { addWorksheet } = require('../controllers/worksheets');
+const { addWorksheet, showList } = require('../controllers/worksheets');
 
 
 const router = new Router();
 
-router.post('/add', addWorksheet)
+router.post('/add', addWorksheet);
+router.get('/list', showList)
 
 module.exports = router
