@@ -54,8 +54,6 @@ exports.addWorksheet = async (req, res, next) => {
             })
         });
 
-        console.log(picturesFolder)
-
         // TODO : Creation ==================================
         worksheet.create({
             ...newBody,
@@ -85,13 +83,44 @@ exports.addWorksheet = async (req, res, next) => {
 exports.showList = async (req, res, next) => {
 
     try {
-        const worksheets = await worksheet.find()
+        const perPage = Number(req.query.per_page) || 0
+        const page = Number(req.query.page) || 1
+        const documents = await worksheet.find().countDocuments()
+        
+        const totalPages = Math.ceil(documents/perPage)
+
+        const worksheets = await worksheet.find().skip((page-1)*perPage).limit(perPage)
 
         res.status(200).json({
             message : 'کاربرگ ها با موفقیت دریافت شدند !',
-            data : worksheets
+            totalPages,
+            data : worksheets,
         })
     } catch (err) {
-        console.log(err)
+        next(err)
+    }
+}
+
+exports.deleteWorksheet = async (req, res, next) => {
+    
+    try {
+
+        const {id} = req.query
+
+        if(!id) {
+            const err = new Error('کاربرگی یافت نشد !')
+            err.status = 404;
+            throw err
+        }
+
+        await worksheet.findByIdAndDelete(id)
+
+        res.status(200).json({
+            message : "کاربرگ با موفقیت حذف گردید !"
+        })
+    } catch (err) {
+        err.message.includes('Cast to ObjectId failed for value')
+        ? res.status(400).json({message : "مشکلی در درخواست شما وجود دارد !"})
+        : next(err)
     }
 }
