@@ -2,7 +2,8 @@
 const envConfig = require('dotenv').config({path : "./config/config.env"});
 const parser = require('body-parser');
 const cors = require('cors');
-const fileUpload = require('express-fileupload');
+const path = require('path');
+const fileUpload = require('express-fileupload')
 
 // ? ===================== Files =========
 const connectDB = require('./config/db');
@@ -22,6 +23,7 @@ const { errorHandler } = require('./middlewares/error');
 connectDB();
 
 // * ========= Parsers ===================
+app.use(express.static(path.resolve('./public')));
 app.use(parser.urlencoded({extended : true}))
 app.use(fileUpload())
 app.use(express.json());

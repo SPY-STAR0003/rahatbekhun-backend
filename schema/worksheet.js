@@ -52,8 +52,8 @@ const worksheetSchema = {
         required : true,
         trim : true
     },
-    pictures : {
-        type : Array,
+    images : {
+        type : String,
         required : true
     }
 }
@@ -69,7 +69,7 @@ const worksheetYupSchema = yup.object().shape({
     status : yup.string().required("دست شوما درد نکنه !").oneOf(['منتشرشده','در دست بررسی'], ""),
     details : yup.string().required("دو کلوم نوشتن برا این لامصب اینقد سخته که نمی نویسی ؟؟"),
     hashtags : yup.array().required('اصن هشتگ نزاری بعداً چجور ملت اینا پیدا کنند ؟').of(yup.string()),
-    pictures : yup.array().required()
+    images : yup.string().required('عکس کاربرگ رو یادت رفته آپلود کنی !')
 })
 
 module.exports = {

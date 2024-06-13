@@ -44,6 +44,7 @@
   "devDependencies": {
     "@types/node": "^20.11.15",
     "body-parser": "^1.20.2",
+    "colors": "^1.4.0",
     "cross-env": "^7.0.3",
     "nodemon": "^3.0.3"
   }
