@@ -6,6 +6,7 @@ const uuid = require('uuid').v4;
 const multer = require('multer');
 const colors = require('colors');
 const fs = require('fs');
+const path = require('path');
 
 exports.addWorksheet = async (req, res, next) => {
 
@@ -266,29 +267,28 @@ exports.upload = async (req, res, next) => {
 
 exports.deleteUploadedPicture = async (req, res, next) => {
 
-    const { image, id } = req.body
-
+    const { image, id } = req.body    
+        
     try {
         if(!image) {
-            const err = new Error("چنین تصویری یافت نشد")
-            err.status = 404
-            throw err
+                const err = new Error("چنین تصویری یافت نشد")
+                err.status = 404
+                throw err
+            }
+        
+        // ! if ID equals 'new' means we are creating worksheet ...
+        // ! Else if we're editing !
+        if(id !== 'new') {
+            
+            
         }
+        
+        fs.unlink(`public/uploads/worksheets/${image}`, err => err && console.log(err))
 
-        // ! if ID equals 1 means we are creating worksheet ...
-        if(id !== 1) {
-
-            // !! This part will update in editing worksheets ...
-            // const paper = worksheet.findById(id)
-            // console.log(paper)
-
-        } else if(!id) {
-            const err = new Error('هیچ کاربری متناسب با ایدی ارسالی پیدا نشد')
-            err.status = 404
-            throw err
-        }
-
-        fs.unlink(`${root}/public/uploads/worksheets/${image}`, err => console.log(err))
+        res.status(200).json({
+            message : "فایل با موفقیت حذف شد !"
+        })
+    
     } catch (err) {
         next(err)
     }
