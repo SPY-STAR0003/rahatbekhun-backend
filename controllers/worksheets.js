@@ -9,13 +9,11 @@ const Worksheet = require("../models/worksheet");
 exports.addWorksheet = async (req, res, next) => {
 
     const {files, body} = req
-    console.log(colors.red(body))
 
     try {
 
         // Not define any pictures ===================
         if(body['images'] === null | !body['images']) {
-            console.log(colors.bgRed(`files = ${files}`))
             const err = new Error('pictures')
             err.data = [{field : 'pictures', message : 'عکسی بارگذاری نکرده اید !'}]
             err.status = 401;
@@ -135,24 +133,12 @@ exports.editWorksheet = async (req, res, next) => {
 }
 
 exports.setEditedWorksheet = async (req, res, next) => {
-    const {files, body} = req
-
-    // const ffff = []
-
-    console.log(body)
-    
-    // Object.entries(body).forEach((item, index) => {
-    //     if(item[0].includes('files')) {
-    //         ffff.push({file : 1, name : item[1]})
-    //     }
-    // })
-
-    // console.log(ffff)
+    const {body} = req
 
     try {
         
         // TODO : Not define any pictures =======================
-        if(files === null) {
+        if(body['images'] === null | !body['images']) {
             const err = new Error('pictures')
             err.data = [{field : 'pictures', message : 'عکسی بارگذاری نکرده اید !'}]
             err.status = 401;
@@ -169,41 +155,18 @@ exports.setEditedWorksheet = async (req, res, next) => {
             }, { hashtags : body['hashtags[]'] })
     
         if(typeof newBody.hashtags === 'string') newBody.hashtags = [newBody.hashtags]
-    
-        // TODO : Get Images ====================================
-        const uploadedImages = Object.values(files)[0].length
-            ? Object.values(files)[0]
-            : [Object.values(files)[0]]
 
         // TODO : Validation ================================
-        await worksheet.worksheetValidation({...newBody, pictures : uploadedImages})
-
-        // TODO : Make Images Ready ! =======================
-        const picturesFolder = []
-
-        uploadedImages.forEach(async (picture, index) => {          
-            const name = `${shortId.generate()}_${picture.name}`
-            const path = `${root}/public/uploads/worksheets/${name}`
-            
-            picturesFolder.push({file : index, name})
-
-            await sharp(picture.data)
-            .jpeg({quality : 60})
-            .toFile(path)
-            .catch((err) => {
-                console.log(err)
-            })
-        });
+        await worksheet.worksheetValidation({...newBody})
 
         // TODO : Creation ==================================
 
         await worksheet.findByIdAndUpdate({_id : newBody._id}, {
             ...newBody,
-            pictures : picturesFolder
         })
 
         res.status(200).json({
-            message : "done"
+            message : "کاربرگ با موفقیت ویرایش شد !"
         })
 
     } catch (err) {
@@ -233,7 +196,6 @@ exports.upload = async (req, res, next) => {
         ? files 
         : [files]
 
-        
     try {
 
         const links = await Promise.all(images.map( async (image) => {
