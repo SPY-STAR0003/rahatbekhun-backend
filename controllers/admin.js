@@ -74,7 +74,7 @@ exports.loginCtrl = async (req, res, next) => {
 
 exports.auth = async (req, res, next) => {
 
-    const token = req.body.headers.authorization
+    const token = req?.body?.headers?.authorization ?? req?.get('cookie')?.split('rahatbekhun-user-token=')[1]
 
     try {
         if(!token) {
