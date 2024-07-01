@@ -1,6 +1,6 @@
 
 const { Router } = require('express');
-const { addWorksheet, showList, deleteWorksheet, editWorksheet, setEditedWorksheet, upload, deleteUploadedPicture } = require('../controllers/worksheets');
+const { addWorksheet, showList, deleteWorksheet, editWorksheet, setEditedWorksheet, upload, deleteUploadedPicture, pdfUpload } = require('../controllers/worksheets');
 
 
 const router = new Router();
@@ -13,5 +13,6 @@ router.put('/edit', setEditedWorksheet)
 router.post('/delete-picture', deleteUploadedPicture)
 
 router.post('/upload', upload)
+router.post('/upload-pdf', pdfUpload)
 
 module.exports = router

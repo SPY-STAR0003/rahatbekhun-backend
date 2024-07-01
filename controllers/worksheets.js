@@ -35,15 +35,14 @@ exports.addWorksheet = async (req, res, next) => {
         await worksheet.worksheetValidation(newBody)
 
         // Creation ==================================
-
-        worksheet.create(newBody)
+        await worksheet.create(newBody)
 
         res.status(200).json({
             message : "done"
         })
 
     } catch (err) {
-        if(err.errors) {
+        if(err.inner) {
             const data = err.inner.map((item) => {
                 return {field : item.path, message : item.errors[0]}
             })
@@ -54,7 +53,6 @@ exports.addWorksheet = async (req, res, next) => {
         } else {
             next(err)
         }
-        next(err)
     }
 }
 
@@ -185,7 +183,31 @@ exports.setEditedWorksheet = async (req, res, next) => {
     }
 }
 
-exports.uploadPictures = async (req, res, next) => {
+exports.pdfUpload = async (req, res, next) => {
+
+    try {
+        const file = Object.values(req.files)[0]
+        const fileName = `pdf_name=${shortId.generate()}_${file.name}`
+        const filePath = `${root}/public/uploads/worksheets/pdfs/${fileName}`
+
+        if(!file || !fileName) {
+            const err = new Error('هیچ فایلی در نظر گرفته نشده است !')
+            err.status = 401
+            throw err
+        }
+    
+        fs.writeFileSync(filePath, file.data)
+    
+        res.status(200).json({
+            message : 'successful',
+            link : filePath
+        })
+
+    } catch (err) {
+        console.log(err)
+        next(err)
+    }
+
 }
 
 exports.upload = async (req, res, next) => {
@@ -201,7 +223,7 @@ exports.upload = async (req, res, next) => {
         const links = await Promise.all(images.map( async (image) => {
 
             const name = `worksheet_name=${shortId.generate()}_${image.name}`
-            const path = `${root}/public/uploads/worksheets/${name}`
+            const path = `${root}/public/uploads/worksheets/images/${name}`
     
             await sharp(image.data)
             .jpeg({quality : 60})
@@ -210,7 +232,7 @@ exports.upload = async (req, res, next) => {
                 console.log(err)
             })
 
-            return `http://localhost:5000/uploads/worksheets/${name}`
+            return `http://localhost:5000/uploads/worksheets/images/${name}`
         }))
 
         res.status(200).json({
@@ -241,12 +263,12 @@ exports.deleteUploadedPicture = async (req, res, next) => {
         if(id) {
             const worksheet = await Worksheet.findById(id)
             const worksheetImages = await JSON.parse(worksheet.images)
-            const deletedImage = `http://localhost:5000/uploads/worksheets/${image}`
+            const deletedImage = `http://localhost:5000/uploads/worksheets/images/${image}`
 
             newImages = await JSON.stringify(worksheetImages.filter((item) => item !== deletedImage))
 
             await Worksheet.findByIdAndUpdate(id, {images : newImages})
-            fs.unlink(`public/uploads/worksheets/${image}`, err => err && console.log(err))
+            fs.unlink(`public/uploads/worksheets/images/${image}`, err => err && console.log(err))
 
             res.status(200).json({
                 message : "فایل با موفقیت حذف شد !",
@@ -255,7 +277,7 @@ exports.deleteUploadedPicture = async (req, res, next) => {
 
             res.end()
         } else {
-            fs.unlink(`public/uploads/worksheets/${image}`, err => err && console.log(err))
+            fs.unlink(`public/uploads/worksheets/images/${image}`, err => err && console.log(err))
 
             res.status(201).json({
                 message : "فایل با موفقیت حذف شد !",
