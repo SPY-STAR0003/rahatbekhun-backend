@@ -30,7 +30,8 @@ app.use(express.json());
 app.use(setHeaders)
 app.use(cors({
   origin: 'http://localhost:3000',
-  credentials : true
+  credentials : true,
+  optionSuccessStatus:200
 }))
 
 // * ========= Routes ====================

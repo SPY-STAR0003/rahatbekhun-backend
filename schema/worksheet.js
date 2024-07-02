@@ -92,7 +92,7 @@ const worksheetSchema = {
         required : true,
         trim : true
     },
-    images : {
+    image : {
         type : String,
         required : true
     },
@@ -121,7 +121,7 @@ const worksheetYupSchema = yup.object().shape({
     usableFor : yup.string().required("باید بگی این کاربرگ برای چیه !؟").oneOf(["برای تمرین و آزمون","مخصوص آزمون" ,"مخصوص تمرین" ], "گزینه ای که میگی داخل گزینه ها نیست !"),
     isPublished : yup.boolean().required("دست شوما درد نکنه !"),
     hashtags : yup.array().required('اصن هشتگ نزاری بعداً چجور ملت اینا پیدا کنند ؟').of(yup.string()),
-    images : yup.string().required('عکس کاربرگ رو یادت رفته آپلود کنی !'),
+    image : yup.string().required('عکس کاربرگ رو یادت رفته آپلود کنی !'),
     pdf : yup.string().required('عکس کاربرگ رو یادت رفته آپلود کنی !')
 })
 

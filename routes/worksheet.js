@@ -1,6 +1,7 @@
 
 const { Router } = require('express');
-const { addWorksheet, showList, deleteWorksheet, editWorksheet, setEditedWorksheet, upload, deleteUploadedPicture, pdfUpload } = require('../controllers/worksheets');
+const { addWorksheet, showList, deleteWorksheet, editWorksheet, setEditedWorksheet } = require('../controllers/worksheets');
+const { upload, pdfUpload, deleteUploadedPicture } = require('../controllers/uploads');
 
 
 const router = new Router();

@@ -1,10 +1,4 @@
-const sharp = require("sharp");
-const shortId = require('shortid');
-const root = require('app-root-path');
 const worksheet = require("../models/worksheet");
-const colors = require('colors');
-const fs = require('fs');
-const Worksheet = require("../models/worksheet");
 
 exports.addWorksheet = async (req, res, next) => {
 
@@ -13,7 +7,7 @@ exports.addWorksheet = async (req, res, next) => {
     try {
 
         // Not define any pictures ===================
-        if(body['images'] === null | !body['images']) {
+        if(body['image'] === null | !body['image']) {
             const err = new Error('pictures')
             err.data = [{field : 'pictures', message : 'عکسی بارگذاری نکرده اید !'}]
             err.status = 401;
@@ -131,12 +125,15 @@ exports.editWorksheet = async (req, res, next) => {
 }
 
 exports.setEditedWorksheet = async (req, res, next) => {
+
+    console.log("first")
+
     const {body} = req
 
     try {
         
         // TODO : Not define any pictures =======================
-        if(body['images'] === null | !body['images']) {
+        if(body['image'] === null | !body['image']) {
             const err = new Error('pictures')
             err.data = [{field : 'pictures', message : 'عکسی بارگذاری نکرده اید !'}]
             err.status = 401;
@@ -179,111 +176,6 @@ exports.setEditedWorksheet = async (req, res, next) => {
         } else {
             next(err)
         }
-        next(err)
-    }
-}
-
-exports.pdfUpload = async (req, res, next) => {
-
-    try {
-        const file = Object.values(req.files)[0]
-        const fileName = `pdf_name=${shortId.generate()}_${file.name}`
-        const filePath = `${root}/public/uploads/worksheets/pdfs/${fileName}`
-
-        if(!file || !fileName) {
-            const err = new Error('هیچ فایلی در نظر گرفته نشده است !')
-            err.status = 401
-            throw err
-        }
-    
-        fs.writeFileSync(filePath, file.data)
-    
-        res.status(200).json({
-            message : 'successful',
-            link : filePath
-        })
-
-    } catch (err) {
-        console.log(err)
-        next(err)
-    }
-
-}
-
-exports.upload = async (req, res, next) => {
-
-    const files = Object.values(req.files)[0]
-
-    const images = Array.isArray(files)
-        ? files 
-        : [files]
-
-    try {
-
-        const links = await Promise.all(images.map( async (image) => {
-
-            const name = `worksheet_name=${shortId.generate()}_${image.name}`
-            const path = `${root}/public/uploads/worksheets/images/${name}`
-    
-            await sharp(image.data)
-            .jpeg({quality : 60})
-            .toFile(path)
-            .catch((err) => {
-                console.log(err)
-            })
-
-            return `http://localhost:5000/uploads/worksheets/images/${name}`
-        }))
-
-        res.status(200).json({
-            message : 'عکس با موفقیت آپلود شد !',
-            links
-        })
-    } catch (err) {
-        console.log(err)
-        next(err)
-    }
-}
-
-exports.deleteUploadedPicture = async (req, res, next) => {
-
-    const { image, id } = req.body
-        
-    try {
-
-        let newImages;
-
-        if(!image) {
-                const err = new Error("چنین تصویری یافت نشد")
-                err.status = 404
-                throw err
-            }
-        
-        // ! if ID has defined means we are editing a worksheet ...
-        if(id) {
-            const worksheet = await Worksheet.findById(id)
-            const worksheetImages = await JSON.parse(worksheet.images)
-            const deletedImage = `http://localhost:5000/uploads/worksheets/images/${image}`
-
-            newImages = await JSON.stringify(worksheetImages.filter((item) => item !== deletedImage))
-
-            await Worksheet.findByIdAndUpdate(id, {images : newImages})
-            fs.unlink(`public/uploads/worksheets/images/${image}`, err => err && console.log(err))
-
-            res.status(200).json({
-                message : "فایل با موفقیت حذف شد !",
-                newImages
-            })
-
-            res.end()
-        } else {
-            fs.unlink(`public/uploads/worksheets/images/${image}`, err => err && console.log(err))
-
-            res.status(201).json({
-                message : "فایل با موفقیت حذف شد !",
-            })
-        }
-    } catch (err) {
         next(err)
     }
 }
