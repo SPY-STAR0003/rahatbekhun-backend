@@ -2,11 +2,6 @@
 const yup = require('yup');
 
 const worksheetSchema = {
-    _type : {
-        type : String,
-        required : true,
-        trim : true
-    },
     _subject : {
         type : String,
         required : true,
@@ -103,7 +98,6 @@ const worksheetSchema = {
 }
 
 const worksheetYupSchema = yup.object().shape({
-    _type : yup.string().required('آخه این فایل چه مدلی هست ؟').oneOf(["کاربرگ","ویدیو","دوره","آزمون","بازی"]),
     _subject : yup.string().required('فدات شم این از کدوم کتابه ؟ چرا نمیگی ؟').oneOf(["ریاضی","فارسی","مطالعات","قرآن و هدیه ها","هنر","علوم","تفکروپژوهش","کاروفناوری"], 'از بین کتابا یه کتاب انتخاب کن !'),
     _author : yup.string().required("سازنده این کاربرگ سطحش چیه ؟").oneOf(["راحت بخون","سازندگان تاییدشده","سازندگان معمولی"]),
     _grade : yup.string().required('طرف نباس بدونه مالی چه سالیه این کاربرگ ؟').oneOf(['اول','دوم','سوم','چهارم','پنجم','ششم'], 'مال چه پایه ایه ؟ پایه رو انتخاب نکردی که !!'),

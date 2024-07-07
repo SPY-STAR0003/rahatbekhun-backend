@@ -52,14 +52,32 @@ exports.addWorksheet = async (req, res, next) => {
 
 exports.showList = async (req, res, next) => {
 
+    const filtering = (grade, subject) => {
+        if(grade)   return {_grade : grade}
+        if(subject) return {_subject : subject}
+        if(grade, subject) return {_grade : grade, _subject : subject}
+        return {}
+    }
+
+    const {grade, subject, num} = req.query
+
     try {
-        const perPage = Number(req.query.per_page) || 0
+        const perPage = Number(req.query.per_page) || 6
         const page = Number(req.query.page) || 1
-        const documents = await worksheet.find().countDocuments()
+
+        let worksheets;
+
+        if(grade || subject) {
+            worksheets = await worksheet.find(filtering(grade, subject)).skip((page-1)*perPage).limit(perPage)
+        } else {
+            worksheets = await worksheet.find().skip((page-1)*perPage).limit(perPage)
+        }
+
+        let documents = num ?? await worksheet.find({grade : grade, _subject : subject}).countDocuments()
+            
         
         const totalPages = Math.ceil(documents/perPage)
 
-        const worksheets = await worksheet.find().skip((page-1)*perPage).limit(perPage)
 
         res.status(200).json({
             message : 'کاربرگ ها با موفقیت دریافت شدند !',
@@ -176,6 +194,37 @@ exports.setEditedWorksheet = async (req, res, next) => {
         } else {
             next(err)
         }
+        next(err)
+    }
+}
+
+exports.singleWorksheet = async (req, res, next) => {
+
+    try {
+
+        const id = req?.query?.id
+
+        if(!id) {
+            const err = new Error('هیج آیدی مناسبی یافت نشد !')
+            err.status = 401
+            throw err
+        }
+
+        const foundedWorksheet = await worksheet.findById(id)
+
+        if(!foundedWorksheet) {
+            const err = new Error('هیج کاربرگی متناسب با درخواست شما یافت نشد !')
+            err.status = 401
+            throw err
+        }
+        
+        res.status(200).json({
+            data : foundedWorksheet,
+            message : "اطلاعات با موفقیت دریافت شدند !"
+        })
+        
+    } catch (err) {
+        console.log(err)
         next(err)
     }
 }

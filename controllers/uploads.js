@@ -8,8 +8,6 @@ exports.pdfUpload = async (req, res, next) => {
 
     const token = req?.body?.headers?.authorization ?? req?.get('cookie')?.split('rahatbekhun-user-token=')[1]
 
-    console.log(req.files)
-
     try {
         const file = req.files.pdf
         const fileName = `pdf_name=${shortId.generate()}_${file.name}`
@@ -31,7 +29,7 @@ exports.pdfUpload = async (req, res, next) => {
     
         res.status(200).json({
             message : 'successful',
-            link : filePath
+            link : `https://localhost:5000/uploads/worksheets/pdf/${fileName}`
         })
 
     } catch (err) {
