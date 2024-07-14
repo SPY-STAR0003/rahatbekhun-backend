@@ -73,11 +73,11 @@ exports.showList = async (req, res, next) => {
             worksheets = await worksheet.find().skip((page-1)*perPage).limit(perPage)
         }
 
-        let documents = num ?? await worksheet.find({grade : grade, _subject : subject}).countDocuments()
-            
+        let documents = num ?? await worksheet.find().countDocuments()
         
         const totalPages = Math.ceil(documents/perPage)
 
+        // console.log(totalPages, num, documents)
 
         res.status(200).json({
             message : 'کاربرگ ها با موفقیت دریافت شدند !',
