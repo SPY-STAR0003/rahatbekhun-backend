@@ -6,16 +6,18 @@ const { upload, pdfUpload, deleteUploadedPicture } = require('../controllers/upl
 
 const router = new Router();
 
-router.post('/add', addWorksheet);
 router.get('/list', showList);
-router.delete('/delete', deleteWorksheet)
+
+
+router.post('/add', addWorksheet);
 router.post('/edit', editWorksheet)
 router.put('/edit', setEditedWorksheet)
-router.post('/delete-picture', deleteUploadedPicture)
+router.delete('/delete', deleteWorksheet)
 
 router.post('/single', singleWorksheet)
 
 router.post('/upload', upload)
 router.post('/upload-pdf', pdfUpload)
+router.post('/delete-picture', deleteUploadedPicture)
 
 module.exports = router

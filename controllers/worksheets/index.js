@@ -1,4 +1,4 @@
-const worksheet = require("../models/worksheet");
+const worksheet = require("../../models/worksheet");
 
 exports.addWorksheet = async (req, res, next) => {
 
@@ -52,32 +52,21 @@ exports.addWorksheet = async (req, res, next) => {
 
 exports.showList = async (req, res, next) => {
 
-    const filtering = (grade, subject) => {
-        if(grade)   return {_grade : grade}
-        if(subject) return {_subject : subject}
-        if(grade, subject) return {_grade : grade, _subject : subject}
-        return {}
-    }
-
-    const {grade, subject, num} = req.query
+    let {page, per_page, sort, price, ...props} = req.query
 
     try {
-        const perPage = Number(req.query.per_page) || 6
-        const page = Number(req.query.page) || 1
+        const perPage = Number(per_page) || 6
+        const pageNum = Number(page) || 1
 
-        let worksheets;
 
-        if(grade || subject) {
-            worksheets = await worksheet.find(filtering(grade, subject)).skip((page-1)*perPage).limit(perPage)
-        } else {
-            worksheets = await worksheet.find().skip((page-1)*perPage).limit(perPage)
-        }
-
-        let documents = num ?? await worksheet.find().countDocuments()
         
-        const totalPages = Math.ceil(documents/perPage)
+        if(price === 'فقط رایگان')
+            props = {...props, price : '0'}
+        
+        let documents = await worksheet.find(props).countDocuments()
+        let worksheets = await worksheet.find(props).skip((pageNum-1)*perPage).limit(perPage)
 
-        // console.log(totalPages, num, documents)
+        const totalPages = Math.ceil(documents/perPage)
 
         res.status(200).json({
             message : 'کاربرگ ها با موفقیت دریافت شدند !',
