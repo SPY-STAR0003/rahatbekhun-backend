@@ -29,7 +29,7 @@ exports.pdfUpload = async (req, res, next) => {
     
         res.status(200).json({
             message : 'successful',
-            link : `https://localhost:5000/uploads/worksheets/pdf/${fileName}`
+            link : `https://rahatbekhun.ir/uploads/worksheets/pdf/${fileName}`
         })
 
     } catch (err) {
@@ -64,7 +64,7 @@ exports.upload = async (req, res, next) => {
 
         res.status(200).json({
             message : 'عکس با موفقیت آپلود شد !',
-            link : `http://localhost:5000/uploads/worksheets/images/${name}`
+            link : `http://rahatbekhun.ir/uploads/worksheets/images/${name}`
         })
 
     } catch (err) {
