@@ -118,7 +118,13 @@ exports.auth = async (req, res, next) => {
             throw err
         }
 
-        res.status(200).json(decodedToken)
+        // ====== this line will help to avoid that guests access admin panel !
+        if(req.body.checker) {
+            res.status(200).json(decodedToken)
+        }
+
+        req.userId = decodedToken
+        next();
 
     } catch (err) {
         next(err)
