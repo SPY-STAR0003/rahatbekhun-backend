@@ -74,3 +74,67 @@ exports.deleteVideo = async (req, res, next) => {
             : next(err)
     }
 }
+
+exports.editVideo = async (req, res, next) => {
+
+    console.log(req)
+
+    try {
+        const { id } = req.query
+
+        if(!id) {
+            const err = new Error('شناسه معتبری یافت نشد !')
+            err.status = 404;
+            throw err
+        }
+
+        const video = await Video.findById(id).catch(error => {
+            const err = new Error('ویدیویی با این مشخصات یافت نشد !')
+            err.status = 404;
+            err.data = error
+            throw err
+        })
+
+        res.status(200).json({
+            message : 'اطلاعات ویدیوی انتخابی با موفقیت دریافت شد !',
+            data : video
+        })
+
+    } catch (err) {
+        console.log(err)
+        next(err)
+    }
+}
+
+exports.setEditedVideo = async (req, res, next) => {
+
+    const {body} = req
+
+    try {
+
+        // TODO : Validation ================================
+        await Video.videoValidation(body)
+
+        // TODO : Creation ==================================
+
+        await Video.findByIdAndUpdate({_id : body._id}, body)
+
+        res.status(200).json({
+            message : "ویدیو با موفقیت ویرایش شد !"
+        })
+
+    } catch (err) {
+        if(err.errors) {
+            const data = err.inner.map((item) => {
+                return {field : item.path, message : item.errors[0]}
+            })
+            const error = new Error('information')
+            error.status = 401;
+            error.data = data;
+            next(error)
+        } else {
+            next(err)
+        }
+        next(err)
+    }
+}

@@ -104,7 +104,11 @@ exports.auth = async (req, res, next) => {
     const token = req?.body?.headers?.authorization ?? req?.get('cookie')?.split('rahatbekhun-user-token=')[1]
 
     try {
+
+        console.log(token)
+
         if(!token) {
+            console.log(token)
             const err = new Error('شما اجازه دسترسی به این قسمت را ندارید، لطفا وارد حساب کاربری خود شوید یا یک حساب کاربری بسازید !')
             err.status = 401
             throw err

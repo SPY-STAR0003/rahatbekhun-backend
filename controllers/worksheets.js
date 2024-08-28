@@ -1,4 +1,4 @@
-const worksheet = require("../../models/worksheet");
+const worksheet = require("../models/worksheet");
 
 exports.addWorksheet = async (req, res, next) => {
 
