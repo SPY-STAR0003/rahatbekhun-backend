@@ -95,3 +95,28 @@ exports.deleteUploadedPicture = async (req, res, next) => {
         next(err)
     }
 }
+
+exports.courseCoverUpload = async (req, res, next) => {
+    
+    const image = req.files.image
+
+    try {
+        const name = `course_cover_name=${shortId.generate()}_${image.name}`
+        const path = `${root}/public/uploads/courses/covers/${name}`
+
+        await sharp(image.data)
+            .jpeg({quality : 60})
+            .toFile(path)
+            .catch((err) => {
+                console.log(err)
+            })
+
+        res.status(200).json({
+            message : 'عکس با موفقیت آپلود شد !',
+            link : `http://rahatbekhun.ir/uploads/courses/covers/${name}`
+        })
+    } catch (err) {
+        console.log(err)
+        next(err)
+    }
+}

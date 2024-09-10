@@ -105,10 +105,7 @@ exports.auth = async (req, res, next) => {
 
     try {
 
-        console.log(token)
-
         if(!token) {
-            console.log(token)
             const err = new Error('شما اجازه دسترسی به این قسمت را ندارید، لطفا وارد حساب کاربری خود شوید یا یک حساب کاربری بسازید !')
             err.status = 401
             throw err
