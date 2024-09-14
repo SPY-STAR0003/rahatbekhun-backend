@@ -42,7 +42,7 @@ exports.coursesList = async (req, res, next) => {
         const totalPages = Math.ceil(documents/perPage)
 
         res.status(200).json({
-            message : 'ویدیو ها با موفقیت دریافت شدند !',
+            message : 'دوره ها با موفقیت دریافت شدند !',
             totalPages,
             data : worksheets,
         })
@@ -59,7 +59,7 @@ exports.deleteCourse = async (req, res, next) => {
         const {id} = req.query
 
         if(!id) {
-            const err = new Error('کاربرگی یافت نشد !')
+            const err = new Error('دوره ای یافت نشد !')
             err.status = 404;
             throw err
         }
@@ -89,16 +89,16 @@ exports.editCourse = async (req, res, next) => {
             throw err
         }
 
-        const video = await Course.findById(id).catch(error => {
-            const err = new Error('ویدیویی با این مشخصات یافت نشد !')
+        const course = await Course.findById(id).catch(error => {
+            const err = new Error('دوره ی با این مشخصات یافت نشد !')
             err.status = 404;
             err.data = error
             throw err
         })
 
         res.status(200).json({
-            message : 'اطلاعات ویدیوی انتخابی با موفقیت دریافت شد !',
-            data : video
+            message : 'اطلاعات دوره انتخابی با موفقیت دریافت شد !',
+            data : course
         })
 
     } catch (err) {
@@ -121,7 +121,7 @@ exports.setEditedCourse = async (req, res, next) => {
         await Course.findByIdAndUpdate({_id : body._id}, body)
 
         res.status(200).json({
-            message : "ویدیو با موفقیت ویرایش شد !"
+            message : "دوره با موفقیت ویرایش شد !"
         })
 
     } catch (err) {

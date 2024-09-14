@@ -113,7 +113,7 @@ exports.courseCoverUpload = async (req, res, next) => {
 
         res.status(200).json({
             message : 'عکس با موفقیت آپلود شد !',
-            link : `http://rahatbekhun.ir/uploads/courses/covers/${name}`
+            link : `http://localhost:5000/uploads/courses/covers/${name}`
         })
     } catch (err) {
         console.log(err)
