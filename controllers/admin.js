@@ -7,11 +7,16 @@ const {verify} = require('hcaptcha');
 
 exports.addUser = async (req, res, next) => {
     
-    const {name, email, password, repeat} = req.body
+    const { username, email, password, repeat} = req.body
 
     try {
+
+        const userInfo = {
+            ...req.body,
+            level : 'کاربر'
+        }
         
-        await User.userValidation(req.body);
+        await User.userValidation(userInfo);
 
         if(password !== repeat) {
             const err = new Error("پسورد و تکرار آن یکسان نمی باشد !")
@@ -30,7 +35,9 @@ exports.addUser = async (req, res, next) => {
         }
 
         await User.create({
-            ...req.body,
+            username,
+            email,
+            level : 'کاربر',
             password : hash,
         })
 
@@ -49,23 +56,23 @@ exports.loginCtrl = async (req, res, next) => {
 
     try {
 
-        const captcha = await verify(process.env.HCAPTCHA_SECRET_KEY, captchaToken)
-            .then((data) => {
-                if (data.success === true) {
-                    console.log(data)
-                    return true
-                } else {
-                    console.log(data)
-                }
-            })
-            .catch((err) => console.log(err));
+        // const captcha = await verify(process.env.HCAPTCHA_SECRET_KEY, captchaToken)
+        //     .then((data) => {
+        //         if (data.success === true) {
+        //             console.log(data)
+        //             return true
+        //         } else {
+        //             console.log(data)
+        //         }
+        //     })
+        //     .catch((err) => console.log(err));
 
-        if(captcha !== true) {
-            const err = new Error("مشکل captcha ")
-            err.data = "ثابت کنید که انسان هستید !"
-            err.status = 401;
-            throw err
-        } 
+        // if(captcha !== true) {
+        //     const err = new Error("مشکل captcha ")
+        //     err.data = "ثابت کنید که انسان هستید !"
+        //     err.status = 401;
+        //     throw err
+        // } 
 
         const user = await User.findOne({email})
         
@@ -85,7 +92,7 @@ exports.loginCtrl = async (req, res, next) => {
                 username : user.username
             }, process.env.JWT_SECRET)
 
-            res.status(200).json({token, userId : user._id.toString()})
+            res.status(200).json({token, userId : user._id.toString(), level : user?.level})
 
         } else {
             const err = new Error("رمز عبور نامعتبر")
@@ -119,12 +126,15 @@ exports.auth = async (req, res, next) => {
             throw err
         }
 
+        const user = await User.findById(decodedToken?.userId)
+        user.password = 'notAccess'
+
         // ====== this line will help to avoid that guests access admin panel !
         if(req.body.checker) {
-            res.status(200).json(decodedToken)
+            res.status(200).json(user)
         }
 
-        req.userId = decodedToken
+        req.userId = user
         next();
 
     } catch (err) {

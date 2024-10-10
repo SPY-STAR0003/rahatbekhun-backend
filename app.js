@@ -19,6 +19,7 @@ const worksheetRoute = require('./routes/worksheet');
 const searchRoute = require('./routes/search');
 const videoRoute = require('./routes/videos');
 const courseRoute = require('./routes/courses');
+const profileRoute = require('./routes/profile');
 const { errorHandler } = require('./middlewares/error');
 
 // * ========= Connect DataBase ==========
@@ -43,6 +44,7 @@ app.use("/admin/worksheets", worksheetRoute)
 app.use("/admin/search", searchRoute)
 app.use("/admin/videos", videoRoute)
 app.use("/admin/courses", courseRoute)
+app.use("/admin/profile", profileRoute)
 
 // * ========= Middlewares ===============
 app.use(errorHandler)
