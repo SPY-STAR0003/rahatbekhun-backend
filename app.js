@@ -20,6 +20,7 @@ const searchRoute = require('./routes/search');
 const videoRoute = require('./routes/videos');
 const courseRoute = require('./routes/courses');
 const profileRoute = require('./routes/profile');
+const usersRoute = require('./routes/users');
 const { errorHandler } = require('./middlewares/error');
 
 // * ========= Connect DataBase ==========
@@ -45,6 +46,7 @@ app.use("/admin/search", searchRoute)
 app.use("/admin/videos", videoRoute)
 app.use("/admin/courses", courseRoute)
 app.use("/admin/profile", profileRoute)
+app.use("/admin/users", usersRoute)
 
 // * ========= Middlewares ===============
 app.use(errorHandler)

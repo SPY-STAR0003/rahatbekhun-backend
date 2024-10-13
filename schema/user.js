@@ -53,6 +53,12 @@ const userSchema = {
     degree : {
         type : String
     },
+    courses : {
+        type : String,
+    },
+    purchases : {
+        type : String,
+    }
 }
 
 const userYupSchema = yup.object().shape({
@@ -71,6 +77,8 @@ const userYupSchema = yup.object().shape({
     description : yup.string(),
     expertise : yup.string(),
     degree : yup.string(),
+    courses : yup.string(),
+    purchases : yup.string(),
 })
 
 module.exports = {
