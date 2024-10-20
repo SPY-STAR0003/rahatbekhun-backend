@@ -1,35 +1,17 @@
 const User = require("../models/user");
+const bcrypt = require('bcryptjs');
 
 exports.addUser = async (req, res, next) => {
 
-    const {files, body} = req
+    const {body} = req
 
     try {
 
-        // Not define any pictures ===================
-        if(body['image'] === null | !body['image']) {
-            const err = new Error('pictures')
-            err.data = [{field : 'pictures', message : 'عکسی بارگذاری نکرده اید !'}]
-            err.status = 401;
-            throw err;
-        }
-
-        // Get Hashtags ============================== 
-        const newBody = Object.keys(body)
-            .filter(item => item !== 'hashtags[]')
-            .reduce((newObj, key) =>
-            {
-                newObj[key] = body[key];
-                return newObj;
-            }, { hashtags : body['hashtags[]'] })
-    
-        if(typeof newBody.hashtags === 'string') newBody.hashtags = [newBody.hashtags]
-
         // Validation ================================
-        await worksheet.worksheetValidation(newBody)
+        await User.userValidation(body)
 
         // Creation ==================================
-        await worksheet.create(newBody)
+        await User.create(body)
 
         res.status(200).json({
             message : "done"
@@ -88,7 +70,7 @@ exports.deleteUser = async (req, res, next) => {
             throw err
         }
 
-        await worksheet.findByIdAndDelete(id)
+        await User.findByIdAndDelete(id)
 
         res.status(200).json({
             message : "کاربر با موفقیت حذف گردید !"
@@ -111,16 +93,24 @@ exports.editUser = async (req, res, next) => {
             throw err
         }
 
-        const editedWorksheet = await worksheet.findById(id).catch(error => {
+        let selectedUser = await User.findById(id).catch(error => {
             const err = new Error('کاربری با این مشخصات یافت نشد !')
             err.status = 404;
             err.data = error
             throw err
         })
 
+        let user = {};
+
+        Object.entries(selectedUser._doc)
+            .filter(item => item[0] !== 'password')
+            .forEach((item) => {
+                user[item[0]] = item[1]
+            })
+
         res.status(200).json({
             message : 'اطلاعات کاربر انتخابی با موفقیت دریافت شد !',
-            data : editedWorksheet
+            data : user
         })
 
     } catch (err) {
@@ -131,38 +121,35 @@ exports.editUser = async (req, res, next) => {
 
 exports.setEditedUser = async (req, res, next) => {
 
-    console.log("first")
-
     const {body} = req
 
     try {
-        
-        // TODO : Not define any pictures =======================
-        if(body['image'] === null | !body['image']) {
-            const err = new Error('pictures')
-            err.data = [{field : 'pictures', message : 'عکسی بارگذاری نکرده اید !'}]
+
+        let password = body?._id
+        let repeat = body?._id
+
+        if(password && password !== repeat) {
+            const err = new Error('رمزعبور با تکرار آن یکسان نیست !')
             err.status = 401;
             throw err;
         }
 
-        // TODO : Get Hashtags ==================================    
-        const newBody = Object.keys(body)
-            .filter(item => item !== 'hashtags[]')
-            .reduce((newObj, key) =>
-            {
-                newObj[key] = body[key];
-                return newObj;
-            }, { hashtags : body['hashtags[]'] })
-    
-        if(typeof newBody.hashtags === 'string') newBody.hashtags = [newBody.hashtags]
+        if(!body.password) {
+            let user = await User.findById(body?._id)
+            password = user?.password
+        }
 
         // TODO : Validation ================================
-        await worksheet.worksheetValidation({...newBody})
+        await User.userValidation({
+            ...body,
+            password,
+            repeat : password
+        })
 
         // TODO : Creation ==================================
-
-        await worksheet.findByIdAndUpdate({_id : newBody._id}, {
-            ...newBody,
+        await User.findByIdAndUpdate({_id : body._id}, {
+            ...body,
+            password
         })
 
         res.status(200).json({
