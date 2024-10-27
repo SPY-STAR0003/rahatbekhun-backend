@@ -2,7 +2,7 @@
 const yup = require('yup');
 
 const postSchema = {
-    title : {
+    name : {
         type : String,
         required : true,
         trim : true
@@ -12,9 +12,28 @@ const postSchema = {
         required : true,
         trim : true
     },
-    type : {
+    condition : {
         type : String,
         required : true,
+        trim : true
+    },
+    user : {
+        type : String,
+        required : true,
+        trim : true
+    },
+    cover : {
+        type : String,
+        required : true,
+        trim : true
+    },
+    hashtags : {
+        type : String,
+        required : true,
+        trim : true
+    },
+    author : {
+        type : String,
         trim : true
     },
     body : {
@@ -22,32 +41,20 @@ const postSchema = {
         required : true
     },
     createdAt : {
-        type : Date,
-        required : true
+        required : true,
+        type : String
     }
 }
 
-const categoryOneOf = [
-    'ریاضی',
-    'ورزش و سلامتی',
-    'آموزش زبان',
-    'هنر',
-    'تاریخ و جغرافیا',
-    'تکنولوژی',
-    'روابط اجتماعی',
-    'علوم و آزمایشگاه',
-    'دینی و مذهبی',
-    'بازی',
-    'روانشناسی کودک',
-    'متفرقه',
-]
-
 const postYupSchema = yup.object().shape({
-    title : yup.string().required("نام پست الزامی است !").max(30, "نام پست باید حداکثر 30 کاراکتر باشد !"),
-    category : yup.string().oneOf(categoryOneOf, "از بین دسته بندی های قرار گرفته یکی را انتخاب کنید !").required("دسته بندی مناسبی را انتخاب کنید !"),
-    type : yup.string().oneOf(['عمومی', 'خصوصی', 'منتظر انتشار'], "لطفا نوع فایل را از موارد گفته شده انتخاب کنید !").required("نوع فایل خود را انتخاب کنید !"),
-    body : yup.string().required("متنی برای پست خود بنویسید !"),
-    createdAt : yup.date("فقط مقدار زمان قابل قبول است !").required("زمان را وارد کنید !")
+    name : yup.string().required('برای پست جدیدت یه اسم بزار باو !'),
+    category : yup.string().required('یه دسته بندی برای پستت مشخص کن !'),
+    user : yup.string().required('این پست بیشتر به درد کی میخوره ؟'),
+    cover : yup.string().required('برای پستت یه کاور بزار خوشتیپ !'),
+    condition : yup.string().required('وضعیت پستت رو مشخص کن !'),
+    body : yup.string().required('برای پستت یه متن بنویس !'),
+    hashtags : yup.string().required('هشتگ برای پستت از نون شب واجب تره !'),
+    author : yup.string(),
 })
 
 module.exports = {

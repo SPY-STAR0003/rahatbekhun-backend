@@ -10,8 +10,14 @@ exports.addUser = async (req, res, next) => {
         // Validation ================================
         await User.userValidation(body)
 
+        // Hash Password =============================
+        const hash = await bcrypt.hash(body?.password, 10);
+
         // Creation ==================================
-        await User.create(body)
+        await User.create({
+            ...body,
+            password : hash
+        })
 
         res.status(200).json({
             message : "done"

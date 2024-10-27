@@ -14,4 +14,5 @@ router.delete('/delete', deleteUser)
 
 router.post('/single', singleUser)
 
+
 module.exports = router

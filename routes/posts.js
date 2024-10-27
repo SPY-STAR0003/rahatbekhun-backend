@@ -1,7 +1,7 @@
 
 
 const { Router } = require('express');
-const { addPost, getPosts, deletePost } = require('../controllers/post');
+const { addPost, getPosts, deletePost, uploadCover } = require('../controllers/post');
 
 const router = new Router();
 
@@ -12,5 +12,8 @@ router.post("/add", addPost)
 router.post("/", getPosts)
 
 router.delete("/delete", deletePost)
+
+router.post('/upload-cover', uploadCover)
+
 
 module.exports = router
