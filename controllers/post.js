@@ -4,6 +4,7 @@ const RootPath = require("app-root-path")
 const sharp = require("sharp")
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const fs = require('fs');
 
 exports.addPost = async (req, res, next) => {
 
@@ -61,6 +62,10 @@ exports.deletePost = async (req, res, next) => {
             err.statusCode = 404;
             throw err;
         }
+
+        const post = await Post.findById(id)
+        
+        fs.unlink(`public/${post.cover.split('http://rahatbekhun.ir/')[1]}`, err => err && console.log(err))
 
         await Post.findByIdAndDelete(id)
     
