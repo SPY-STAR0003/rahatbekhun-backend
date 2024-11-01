@@ -8,7 +8,6 @@ const User = require('../models/user');
 exports.addPost = async (req, res, next) => {
 
     const token = req?.body?.headers?.authorization ?? req?.get('cookie')?.split('rahatbekhun-user-token=')[1]
-    const {title} = req.body
 
     try {
 
@@ -22,14 +21,6 @@ exports.addPost = async (req, res, next) => {
         const user = await User.findById(decodedToken?.userId)
         
         await Post.postValidation(req.body)
-
-        const post = await Post.findOne({title})
-
-        if(post) {
-            const err = new Error("پستی با این نام از قبل ثبت شده است !")
-            err.statusCode = 400
-            throw err
-        }
 
         await Post.create({... req.body, author : user?.username})
 
@@ -86,12 +77,21 @@ exports.uploadCover = async (req, res, next) => {
 
     const token = req?.body?.headers?.authorization ?? req?.get('cookie')?.split('rahatbekhun-user-token=')[1]
     const image = req.files.image
+    const title = req.body.title
 
     try {
 
         if(!token) {
             const err = new Error('شما ابتدا باید وارد سایت شوید !')
             err.status = 401
+            throw err
+        }
+
+        const post = await Post.findOne({name : title})
+
+        if(post) {
+            const err = new Error("پستی با این نام از قبل ثبت شده است !")
+            err.statusCode = 400
             throw err
         }
 
