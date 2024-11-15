@@ -83,7 +83,7 @@ exports.uploadCover = async (req, res, next) => {
     const token = req?.body?.headers?.authorization ?? req?.get('cookie')?.split('rahatbekhun-user-token=')[1]
     const image = req.files.image
     const title = req.body.title
-    const isEdit = req.body.isEdit
+    const id = req.body.id
 
     try {
 
@@ -93,14 +93,24 @@ exports.uploadCover = async (req, res, next) => {
             throw err
         }
 
-        if(!isEdit) {
-            const post = await Post.findOne({name : title})
+        const post = await Post.findOne({name : title})
 
-            if(post) {
+        if(id) {
+            // if id defined ==> we're editing post
+            // then we should check new title doesn't used before
+            // but if equals with the post we're editing now ...
+            // ... there is no problem !
+            if(post && post._id.toHexString() !== id) {
                 const err = new Error("پستی با این نام از قبل ثبت شده است !")
                 err.statusCode = 400
                 throw err
             }
+        } else if(!id && post) {
+            // if id is undefined & post id defined ...
+            // that mean is we're creating a new post with duplicated name !
+            const err = new Error("پستی با این نام از قبل ثبت شده است !")
+            err.statusCode = 400
+            throw err
         }
 
         const name = `cover_name=${shortid.generate()}_${image.name}`
@@ -112,6 +122,8 @@ exports.uploadCover = async (req, res, next) => {
             .catch((err) => {
                 console.log(err)
             })
+        
+        fs.unlink(post.cover.replace('http://localhost:5000/', 'public/'), err => err && console.log(err))
 
         res.status(200).json({
             message : 'عکس با موفقیت آپلود شد !',
@@ -123,7 +135,6 @@ exports.uploadCover = async (req, res, next) => {
         next(err)
     }
 }
-
 
 exports.editPost = async (req, res, next) => {
 
