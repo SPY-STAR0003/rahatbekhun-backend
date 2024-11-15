@@ -55,6 +55,9 @@ const postYupSchema = yup.object().shape({
     body : yup.string().required('برای پستت یه متن بنویس !'),
     hashtags : yup.string().required('هشتگ برای پستت از نون شب واجب تره !'),
     author : yup.string(),
+    createdAt : yup.string(),
+    _id : yup.string(),
+    __v : yup.number()
 })
 
 module.exports = {

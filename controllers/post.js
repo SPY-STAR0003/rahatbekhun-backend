@@ -83,6 +83,7 @@ exports.uploadCover = async (req, res, next) => {
     const token = req?.body?.headers?.authorization ?? req?.get('cookie')?.split('rahatbekhun-user-token=')[1]
     const image = req.files.image
     const title = req.body.title
+    const isEdit = req.body.isEdit
 
     try {
 
@@ -92,12 +93,14 @@ exports.uploadCover = async (req, res, next) => {
             throw err
         }
 
-        const post = await Post.findOne({name : title})
+        if(!isEdit) {
+            const post = await Post.findOne({name : title})
 
-        if(post) {
-            const err = new Error("پستی با این نام از قبل ثبت شده است !")
-            err.statusCode = 400
-            throw err
+            if(post) {
+                const err = new Error("پستی با این نام از قبل ثبت شده است !")
+                err.statusCode = 400
+                throw err
+            }
         }
 
         const name = `cover_name=${shortid.generate()}_${image.name}`
@@ -112,11 +115,75 @@ exports.uploadCover = async (req, res, next) => {
 
         res.status(200).json({
             message : 'عکس با موفقیت آپلود شد !',
-            link : `http://rahatbekhun.ir/uploads/posts/covers/${name}`
+            link : `http://localhost:5000/uploads/posts/covers/${name}`
         })
 
     } catch (err) {
         console.log(err)
+        next(err)
+    }
+}
+
+
+exports.editPost = async (req, res, next) => {
+
+    try {
+        const { id } = req.query
+
+        if(!id) {
+            const err = new Error('شناسه معتبری یافت نشد !')
+            err.status = 404;
+            throw err
+        }
+
+        const editedPost = await Post.findById(id).catch(error => {
+            const err = new Error('پستی با این مشخصات یافت نشد !')
+            err.status = 404;
+            err.data = error
+            throw err
+        })
+
+        res.status(200).json({
+            message : 'اطلاعات پست انتخابی با موفقیت دریافت شد !',
+            data : editedPost
+        })
+
+    } catch (err) {
+        console.log(err)
+        next(err)
+    }
+}
+
+exports.setEditedPost = async (req, res, next) => {
+
+
+    const {body} = req
+
+    try {
+
+        // TODO : Validation ================================
+        await Post.postValidation(body)
+
+        // TODO : Creation ==================================
+
+        await Post.findByIdAndUpdate({_id : body._id}, body)
+
+        res.status(200).json({
+            message : "پست با موفقیت ویرایش شد !"
+        })
+
+    } catch (err) {
+        if(err.errors) {
+            const data = err.inner.map((item) => {
+                return {field : item.path, message : item.errors[0]}
+            })
+            const error = new Error('information')
+            error.status = 401;
+            error.data = data;
+            next(error)
+        } else {
+            next(err)
+        }
         next(err)
     }
 }
